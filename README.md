@@ -77,23 +77,30 @@ Using **Active Directory Users and Computers**, created two standard domain acco
 
 Installed Windows 10 Pro (Home edition can't join a domain — this matters) on both `WS-A` and `WS-B`. During setup, chose "Set up for an organization" → "Domain join instead" to skip creating a Microsoft account and land on a local account instead.
 
-Each workstation then needed its DNS pointed at the domain controller's IP (`10.0.2.3`) manually (`Network Adapter → IPv4 Properties → Preferred DNS server`), since a domain can't be discovered without DNS resolution to it. Verified reachability with `ping 10.0.2.3` before attempting to join.
+Each workstation then needed its DNS pointed at the domain controller's IP (`10.0.2.3`) manually (`Network Adapter → IPv4 Properties → Preferred DNS server`), since a domain can't be discovered without DNS resolution to it.
+
+![ipconfig on DC01](screenshots/05-ipconfig.png)
+*(`ipconfig` on DC01 confirming the domain controller's IP address)*
+
+Verified reachability with `ping 10.0.2.3` before attempting to join.
+
+![Ping to DC01](screenshots/06-ping.png)
 
 ### 6. Joining the domain
 
 `Settings → Accounts → Access work or school → Connect → Join this device to a local Active Directory domain`, entered `ayoub.local`, authenticated with `ayoub\Administrator`, and assigned each workstation to its intended domain user (`Lily` on WS-A, `Markus` on WS-B) with local administrator rights.
 
-![Domain join](screenshots/04-domain-join.png)
-
 ### 7. Validation
 
 Confirmed both machines registered correctly by checking **Active Directory Users and Computers → Computers** on the domain controller — both workstation objects appeared automatically post-join.
 
-![Computers registered in AD](screenshots/05-computers-in-ad.png)
+![Computers registered in AD](screenshots/04-computers-in-ad.png)
 
-Post-reboot, both workstations' login screens displayed the domain-qualified username format (`AYOUB\Lily`, `AYOUB\Markus`), confirming the domain identity was active end to end.
+Post-reboot, both workstations' login screens displayed the domain-qualified username format, confirming the domain identity was active end to end.
 
-![Domain login](screenshots/06-domain-login.png)
+![WS-A domain login as AYOUB\Lily](screenshots/07-wsa-login.png)
+
+![WS-B domain login as AYOUB\Markus](screenshots/08-wsb-login.png)
 
 ## Lessons learned
 
@@ -126,9 +133,11 @@ With the domain live, the natural next steps are:
     ├── 01-virtualbox-overview.png
     ├── 02-addc-installed.png
     ├── 03-domain-users.png
-    ├── 04-domain-join.png
-    ├── 05-computers-in-ad.png
-    └── 06-domain-login.png
+    ├── 04-computers-in-ad.png
+    ├── 05-ipconfig.png
+    ├── 06-ping.png
+    ├── 07-wsa-login.png
+    └── 08-wsb-login.png
 ```
 
 ---
