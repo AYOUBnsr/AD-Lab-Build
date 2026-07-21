@@ -2,6 +2,22 @@
 
 *A hands-on lab documenting the build of a Windows enterprise domain — one Server 2019 domain controller and two Windows 10 workstations — inside VirtualBox on Arch Linux.*
 
+![Platform](https://img.shields.io/badge/platform-VirtualBox-183A61?style=flat-square)
+![OS](https://img.shields.io/badge/host-Arch%20Linux-1793D1?style=flat-square&logo=archlinux&logoColor=white)
+![Windows](https://img.shields.io/badge/domain-Windows%20Server%202019-0078D4?style=flat-square&logo=windows&logoColor=white)
+![Status](https://img.shields.io/badge/status-complete-2E8B57?style=flat-square)
+
+---
+
+## Table of contents
+
+- [Why I built this](#why-i-built-this)
+- [Environment](#environment)
+- [The build, step by step](#the-build-step-by-step)
+- [Lessons learned](#lessons-learned)
+- [What's next](#whats-next)
+- [Repo structure](#repo-structure)
+
 ---
 
 ## Why I built this
@@ -21,6 +37,7 @@ This project (based on Security Blue Team's BTL1 optional lab) walks through sta
 | Workstation B | Windows 10 Pro, 2 vCPU, 2GB RAM, 20GB disk |
 | Domain name | `ayoub.local` |
 | Networking | VirtualBox NAT Network (`NatNetwork`, 10.0.2.0/24) — required so VMs can reach each other, unlike plain NAT which isolates them |
+| DC01 IP address | `10.0.2.3` |
 
 ![Network topology](screenshots/00-topology.png)
 *(Diagram: host machine running three VMs on a shared NAT network — DC01 as domain controller, WS-A and WS-B as domain-joined workstations)*
@@ -60,7 +77,7 @@ Using **Active Directory Users and Computers**, created two standard domain acco
 
 Installed Windows 10 Pro (Home edition can't join a domain — this matters) on both `WS-A` and `WS-B`. During setup, chose "Set up for an organization" → "Domain join instead" to skip creating a Microsoft account and land on a local account instead.
 
-Each workstation then needed its DNS pointed at the domain controller's IP manually (`Network Adapter → IPv4 Properties → Preferred DNS server`), since a domain can't be discovered without DNS resolution to it. Verified reachability with a simple `ping` to the DC before attempting to join.
+Each workstation then needed its DNS pointed at the domain controller's IP (`10.0.2.3`) manually (`Network Adapter → IPv4 Properties → Preferred DNS server`), since a domain can't be discovered without DNS resolution to it. Verified reachability with `ping 10.0.2.3` before attempting to join.
 
 ### 6. Joining the domain
 
@@ -80,10 +97,17 @@ Post-reboot, both workstations' login screens displayed the domain-qualified use
 
 ## Lessons learned
 
-- **VirtualBox's default NAT isolates VMs from each other.** This is the single most common blocker for anyone adapting VMware-based lab guides to VirtualBox — the fix is a dedicated NAT Network, not the per-VM NAT adapter.
-- **DNS is the real dependency for domain discovery**, not just IP reachability. A workstation can `ping` the DC successfully and still fail to find the domain if its DNS server isn't pointed at the DC.
-- **Local accounts and domain accounts are two entirely separate identity systems.** The local account created during Windows 10 setup has zero authority over the domain — only credentials that exist inside Active Directory (like the domain Administrator) can approve a domain join.
-- **Snapshots are cheap insurance.** Taking a snapshot immediately after each VM reaches a known-good state (freshly promoted DC, freshly joined workstation) means any later experimentation — intentional or accidental — has a safe rollback point.
+> [!IMPORTANT]
+> **VirtualBox's default NAT isolates VMs from each other.** This is the single most common blocker for anyone adapting VMware-based lab guides to VirtualBox — the fix is a dedicated NAT Network, not the per-VM NAT adapter.
+
+> [!NOTE]
+> **DNS is the real dependency for domain discovery**, not just IP reachability. A workstation can `ping` the DC successfully and still fail to find the domain if its DNS server isn't pointed at the DC.
+
+> [!TIP]
+> **Local accounts and domain accounts are two entirely separate identity systems.** The local account created during Windows 10 setup has zero authority over the domain — only credentials that exist inside Active Directory (like the domain Administrator) can approve a domain join.
+
+> [!TIP]
+> **Snapshots are cheap insurance.** Taking a snapshot immediately after each VM reaches a known-good state (freshly promoted DC, freshly joined workstation) means any later experimentation — intentional or accidental — has a safe rollback point.
 
 ## What's next
 
