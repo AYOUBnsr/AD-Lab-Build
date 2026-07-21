@@ -65,7 +65,7 @@ Installed the **Active Directory Domain Services** role via Server Manager, then
 
 The server rebooted automatically, and the login prompt changed from `Administrator` to `AYOUB\Administrator` — first visible confirmation the domain existed.
 
-![AD DS installed](screenshots/02-AD DC-installed.png)
+![AD DS installed](screenshots/02-AD-DC-installed.png)
 
 ### 4. Creating domain users
 
